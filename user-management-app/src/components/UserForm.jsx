@@ -42,12 +42,12 @@ const UserForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 mx-auto mb-6 bg-white rounded shadow md:w-1/2 lg:w-1/3">
+    <form onSubmit={handleSubmit} className="p-4 mx-auto mb-12 bg-white rounded-md shadow-lg md:w-1/2 lg:w-1/3">
       <h2 className="mb-3 text-lg font-bold text-center">{selectedUserIndex !== null ? 'Edit User' : 'Add User'}</h2>
-      <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" className="w-full p-2 mb-2 border rounded" required />
-      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="w-full p-2 mb-2 border rounded" required />
-      <input type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="Age" className="w-full p-2 mb-2 border rounded" required min="1" />
-      <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full p-2 mb-4 border rounded" required>
+      <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" className="w-full p-2 mb-4 border rounded outline-none appearance-none focus:border-blue-500" required />
+      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="w-full p-2 mb-4 border rounded outline-none appearance-none focus:border-blue-500" required />
+      <input type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="Age" className="w-full p-2 mb-4 border rounded outline-none appearance-none focus:border-blue-500" required min="1" />
+      <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full p-2 mb-4 border rounded outline-none focus:border-blue-500" required>
         <option value="active">Active</option>
         <option value="inactive">Inactive</option>
       </select>
