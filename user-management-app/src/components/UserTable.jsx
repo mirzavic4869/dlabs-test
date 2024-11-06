@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { UserContext } from '../context/UserContext';
 
-const UserTable = ({ users, setUsers, setDisplayedUsers, setSelectedUserIndex }) => {
-  const handleDelete = (index) => {
-    const updatedUsers = [...users];
-    updatedUsers.splice(index, 1);
-    setUsers(updatedUsers);
-    setDisplayedUsers(updatedUsers);
+const UserTable = ({ users, deleteUser }) => {
+  const { setSelectedUserIndex } = useContext(UserContext);
+
+  const handleEdit = (index) => {
+    setSelectedUserIndex(index); // Set the selected user index for editing
   };
 
   return (
@@ -28,10 +28,10 @@ const UserTable = ({ users, setUsers, setDisplayedUsers, setSelectedUserIndex })
               <td className="p-2 text-center border">{user.age}</td>
               <td className="p-2 text-center border">{user.status}</td>
               <td className="p-2 text-center border">
-                <button onClick={() => setSelectedUserIndex(index)} className="px-2 py-1 text-white bg-yellow-500 rounded hover:bg-yellow-600">
+                <button onClick={() => handleEdit(index)} className="px-2 py-1 text-white bg-yellow-500 rounded hover:bg-yellow-600">
                   Edit
                 </button>
-                <button onClick={() => handleDelete(index)} className="px-2 py-1 ml-2 text-white bg-red-500 rounded hover:bg-red-600">
+                <button onClick={() => deleteUser(index)} className="px-2 py-1 ml-2 text-white bg-red-500 rounded hover:bg-red-600">
                   Hapus
                 </button>
               </td>

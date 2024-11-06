@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../context/UserContext';
 
-const UserForm = ({ users, setUsers, displayedUsers, setDisplayedUsers, selectedUserIndex, setSelectedUserIndex }) => {
+const UserForm = () => {
+  const { selectedUserIndex, displayedUsers, setSelectedUserIndex, addUser, updateUser } = useContext(UserContext);
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [age, setAge] = useState('');
   const [status, setStatus] = useState('active');
 
+  // Set the form values based on the selected user index
   useEffect(() => {
     if (selectedUserIndex !== null) {
       const user = displayedUsers[selectedUserIndex];
@@ -21,16 +25,13 @@ const UserForm = ({ users, setUsers, displayedUsers, setDisplayedUsers, selected
     const newUser = { name, email, age, status };
 
     if (selectedUserIndex !== null) {
-      const updatedUsers = [...displayedUsers];
-      updatedUsers[selectedUserIndex] = newUser;
-      setDisplayedUsers(updatedUsers);
-      setUsers(updatedUsers);
+      updateUser(selectedUserIndex, newUser); // Update the selected user
+      resetForm(); // Reset the form fields after update
+      setSelectedUserIndex(null); // Set selectedUserIndex to null to reset form
     } else {
-      setDisplayedUsers([...displayedUsers, newUser]);
-      setUsers([...users, newUser]);
+      addUser(newUser); // Add new user if no user is selected
+      resetForm(); // Reset the form fields after adding
     }
-
-    resetForm();
   };
 
   const resetForm = () => {
@@ -38,12 +39,11 @@ const UserForm = ({ users, setUsers, displayedUsers, setDisplayedUsers, selected
     setEmail('');
     setAge('');
     setStatus('active');
-    setSelectedUserIndex(null);
   };
 
   return (
     <form onSubmit={handleSubmit} className="p-4 mx-auto mb-6 bg-white rounded shadow md:w-1/2 lg:w-1/3">
-      <h2 className="mb-3 text-lg font-bold text-center">User Form</h2>
+      <h2 className="mb-3 text-lg font-bold text-center">{selectedUserIndex !== null ? 'Edit User' : 'Add User'}</h2>
       <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" className="w-full p-2 mb-2 border rounded" required />
       <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="w-full p-2 mb-2 border rounded" required />
       <input type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="Age" className="w-full p-2 mb-2 border rounded" required min="1" />
@@ -51,14 +51,9 @@ const UserForm = ({ users, setUsers, displayedUsers, setDisplayedUsers, selected
         <option value="active">Active</option>
         <option value="inactive">Inactive</option>
       </select>
-      <div className="flex justify-end">
-        <button type="submit" className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">
-          Simpan
-        </button>
-        <button type="button" onClick={resetForm} className="px-4 py-2 ml-2 text-white bg-gray-500 rounded hover:bg-gray-600">
-          Batal
-        </button>
-      </div>
+      <button type="submit" className="w-full px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">
+        {selectedUserIndex !== null ? 'Update User' : 'Add User'}
+      </button>
     </form>
   );
 };

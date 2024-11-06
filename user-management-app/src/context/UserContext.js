@@ -1,4 +1,3 @@
-// UserContext.js
 import React, { createContext, useState, useEffect } from 'react';
 
 const UserContext = createContext();
@@ -6,8 +5,8 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
   const [displayedUsers, setDisplayedUsers] = useState([]);
+  const [selectedUserIndex, setSelectedUserIndex] = useState(null);
 
-  // Fungsi untuk memuat data dari localStorage
   useEffect(() => {
     const storedUsers = localStorage.getItem('users');
     if (storedUsers) {
@@ -15,15 +14,14 @@ export const UserProvider = ({ children }) => {
       setUsers(parsedUsers);
       setDisplayedUsers(parsedUsers);
     } else {
-      fetchUsers(); // Mengambil data dari API jika tidak ada di localStorage
+      fetchUsers();
     }
-  }, []); // Pastikan hanya dipanggil sekali saat pertama kali render
+  }, []);
 
   useEffect(() => {
-    console.log('Fetched users:', displayedUsers); // Cek apakah data sudah ada di displayedUsers
-  }, [displayedUsers]); // Akan dipanggil setiap kali displayedUsers diupdate
+    console.log('Fetched users:', displayedUsers);
+  }, [displayedUsers]);
 
-  // Fungsi untuk mengambil data pengguna dari API eksternal
   const fetchUsers = async () => {
     try {
       const response = await fetch('https://api.github.com/users');
@@ -34,25 +32,18 @@ export const UserProvider = ({ children }) => {
         age: 'N/A',
         status: 'active',
       }));
-      // Set users dan displayedUsers sekaligus
       setUsers(usersData);
-      setDisplayedUsers(usersData); // Update displayedUsers setelah berhasil fetch
+      setDisplayedUsers(usersData);
       localStorage.setItem('users', JSON.stringify(usersData));
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
-  // Fungsi untuk menyimpan data ke localStorage
-  const saveToLocalStorage = (data) => {
-    localStorage.setItem('users', JSON.stringify(data));
-  };
-
-  // Fungsi untuk menambah atau memperbarui pengguna
   const addUser = (user) => {
     setUsers((prev) => {
       const updatedUsers = [...prev, user];
-      saveToLocalStorage(updatedUsers);
+      localStorage.setItem('users', JSON.stringify(updatedUsers));
       return updatedUsers;
     });
     setDisplayedUsers((prev) => [...prev, user]);
@@ -63,42 +54,59 @@ export const UserProvider = ({ children }) => {
     updatedUsers[index] = updatedUser;
     setUsers(updatedUsers);
     setDisplayedUsers(updatedUsers);
-    saveToLocalStorage(updatedUsers);
+    localStorage.setItem('users', JSON.stringify(updatedUsers));
   };
 
   const deleteUser = (index) => {
     const updatedUsers = users.filter((_, i) => i !== index);
     setUsers(updatedUsers);
     setDisplayedUsers(updatedUsers);
-    saveToLocalStorage(updatedUsers);
+    localStorage.setItem('users', JSON.stringify(updatedUsers));
   };
 
-  const value = {
-    users,
-    displayedUsers,
-    setDisplayedUsers,
-    addUser,
-    updateUser,
-    deleteUser,
-    handleSortChange: (criterion) => {
-      let sortedUsers = [...displayedUsers];
-      if (criterion === 'age') {
-        sortedUsers.sort((a, b) => a.age - b.age);
-      } else {
-        sortedUsers.sort((a, b) => a[criterion].localeCompare(b[criterion]));
+  const handleSortChange = (sortKey) => {
+    const sortedUsers = [...displayedUsers].sort((a, b) => {
+      if (sortKey === 'name') {
+        return a.name.localeCompare(b.name);
       }
-      setDisplayedUsers(sortedUsers);
-    },
-    handleFilterChange: (status) => {
-      if (status) {
-        setDisplayedUsers(users.filter((user) => user.status === status));
-      } else {
-        setDisplayedUsers(users);
+      if (sortKey === 'age') {
+        return a.age - b.age;
       }
-    },
+      if (sortKey === 'status') {
+        return a.status.localeCompare(b.status);
+      }
+      return 0;
+    });
+    setDisplayedUsers(sortedUsers);
   };
 
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+  const handleFilterChange = (status) => {
+    if (status === '') {
+      setDisplayedUsers(users);
+    } else {
+      const filteredUsers = users.filter((user) => user.status === status);
+      setDisplayedUsers(filteredUsers);
+    }
+  };
+
+  return (
+    <UserContext.Provider
+      value={{
+        users,
+        displayedUsers,
+        setDisplayedUsers,
+        selectedUserIndex,
+        setSelectedUserIndex,
+        addUser,
+        updateUser,
+        deleteUser,
+        handleSortChange,
+        handleFilterChange,
+      }}
+    >
+      {children}
+    </UserContext.Provider>
+  );
 };
 
-export default UserContext;
+export { UserContext };
