@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible=IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Pengguna Responsif</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  </head>
+  <body class="bg-gray-100 p-4 sm:p-6">
+    <div class="container mx-auto">
+      <h1 class="text-xl sm:text-2xl font-bold mb-4 text-center">Daftar Pengguna</h1>
+
+      <!-- Filter and Sort Controls -->
+      <div class="flex flex-wrap justify-center gap-4 mb-4">
+        <!-- Dropdown Sort -->
+        <div>
+          <label for="sort" class="block mb-2 text-sm font-medium text-gray-700">Sort by</label>
+          <select id="sort" class="px-3 py-2 border rounded" onchange="handleSortChange()">
+            <option value="">Select an option</option>
+            <option value="name">Nama</option>
+            <option value="age">Umur</option>
+            <option value="status">Status Keanggotaan</option>
+          </select>
+        </div>
+
+        <!-- Dropdown Filter -->
+        <div>
+          <label for="filter" class="block mb-2 text-sm font-medium text-gray-700">Filtered by</label>
+          <select id="filter" class="px-3 py-2 border rounded" onchange="handleFilterChange()">
+            <option value="">All</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white rounded shadow">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="p-2 border text-center">Nama</th>
+              <th class="p-2 border text-center">Email</th>
+              <th class="p-2 border text-center">Umur</th>
+              <th class="p-2 border text-center">Status Keanggotaan</th>
+            </tr>
+          </thead>
+          <tbody id="userTable" class="text-center"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
