@@ -11,27 +11,28 @@ errorMessage.className = 'text-center text-red-500 my-4';
 const table = document.getElementById('userTable');
 
 // State untuk pengguna
-let users = [];
-let displayedUsers = [];
+let users = []; // Array untuk menyimpan semua data pengguna
+let displayedUsers = []; // Array untuk menyimpan data pengguna yang ditampilkan
 
 // Fungsi untuk menyimpan data ke localStorage
 function saveToLocalStorage() {
-  localStorage.setItem('users', JSON.stringify(users));
+  localStorage.setItem('users', JSON.stringify(users)); // Simpan data ke localStorage dalam format JSON
 }
 
 // Fungsi untuk memuat data dari localStorage
 function loadFromLocalStorage() {
   const storedUsers = localStorage.getItem('users');
   if (storedUsers) {
-    users = JSON.parse(storedUsers);
-    displayedUsers = [...users];
+    users = JSON.parse(storedUsers); // Parse data JSON menjadi array JavaScript
+    displayedUsers = [...users]; // Salin data ke displayedUsers untuk ditampilkan
   }
 }
 
 // Fungsi untuk menampilkan data pengguna ke dalam tabel
 function displayUsers(userList) {
-  table.innerHTML = '';
+  table.innerHTML = ''; // Hapus konten tabel sebelum menambahkan data baru
   userList.forEach((user, index) => {
+    // Buat baris tabel untuk setiap pengguna
     const row = `
       <tr>
         <td class="p-2 border">${user.name || user.login}</td>
@@ -44,48 +45,49 @@ function displayUsers(userList) {
         </td>
       </tr>
     `;
-    table.innerHTML += row;
+    table.innerHTML += row; // Tambahkan baris ke tabel
   });
 }
 
-// Fungsi untuk mengambil data pengguna dari API
+// Fungsi untuk mengambil data pengguna dari API eksternal
 async function fetchUsers() {
   try {
-    document.body.appendChild(loadingMessage);
-    const response = await axios.get('https://api.github.com/users');
-    document.body.removeChild(loadingMessage);
+    document.body.appendChild(loadingMessage); // Tampilkan pesan loading
+    const response = await axios.get('https://api.github.com/users'); // Ambil data dari API GitHub
+    document.body.removeChild(loadingMessage); // Hapus pesan loading setelah selesai
 
     users = response.data.map((user) => ({
+      // Data diubah agar sesuai dengan struktur aplikasi
       name: user.login,
-      email: 'N/A', // GitHub API tidak menyertakan email dalam response ini
-      age: 'N/A', // Placeholder karena GitHub API tidak memiliki data umur
-      status: 'active', // Sebagai contoh default status
+      email: 'N/A', // Placeholder karena GitHub API tidak menyertakan email
+      age: 'N/A', // Placeholder karena tidak ada data umur di GitHub API
+      status: 'active', // Status default pengguna
     }));
 
-    displayedUsers = [...users];
-    saveToLocalStorage(); // Simpan data API ke localStorage
-    displayUsers(displayedUsers);
+    displayedUsers = [...users]; // Salin data untuk ditampilkan
+    saveToLocalStorage(); // Simpan data ke localStorage
+    displayUsers(displayedUsers); // Tampilkan data di tabel
   } catch (error) {
-    document.body.removeChild(loadingMessage);
-    document.body.appendChild(errorMessage);
-    alert('Error fetching data. Please try again later.');
-    console.error('Error fetching data:', error);
+    document.body.removeChild(loadingMessage); // Hapus pesan loading
+    document.body.appendChild(errorMessage); // Tampilkan pesan error
+    alert('Error fetching data. Please try again later.'); // Notifikasi error ke pengguna
+    console.error('Error fetching data:', error); // Log error di konsol
   }
 }
 
 // Inisialisasi tampilan awal
 window.onload = () => {
-  loadFromLocalStorage();
+  loadFromLocalStorage(); // Muat data dari localStorage jika ada
   if (users.length > 0) {
-    displayUsers(users);
+    displayUsers(users); // Tampilkan data yang dimuat dari localStorage
   } else {
-    fetchUsers();
+    fetchUsers(); // Ambil data dari API jika tidak ada data di localStorage
   }
 };
 
-// Fungsi untuk menambahkan/memperbarui data pengguna
+// Fungsi untuk menambahkan/memperbarui data pengguna melalui form
 document.getElementById('userForm').addEventListener('submit', function (e) {
-  e.preventDefault();
+  e.preventDefault(); // Mencegah pengiriman form standar
   const name = document.getElementById('name').value;
   const email = document.getElementById('email').value;
   const age = parseInt(document.getElementById('age').value);
@@ -95,21 +97,21 @@ document.getElementById('userForm').addEventListener('submit', function (e) {
   // Validasi email
   if (!/\S+@\S+\.\S+/.test(email)) {
     alert('Email tidak valid!');
-    return;
+    return; // Keluar dari fungsi jika email tidak valid
   }
 
   if (userIndex) {
-    // Update pengguna
+    // Update pengguna jika indeks ada
     displayedUsers[userIndex] = { name, email, age, status };
   } else {
-    // Tambah pengguna baru
+    // Tambah pengguna baru jika indeks kosong
     displayedUsers.push({ name, email, age, status });
   }
 
-  users = [...displayedUsers];
+  users = [...displayedUsers]; // Perbarui array users
   saveToLocalStorage(); // Simpan data ke localStorage
-  displayUsers(users);
-  resetForm();
+  displayUsers(users); // Tampilkan data baru di tabel
+  resetForm(); // Reset form setelah submit
 });
 
 // Fungsi untuk mengedit data pengguna
@@ -119,24 +121,24 @@ function editUser(index) {
   document.getElementById('email').value = user.email;
   document.getElementById('age').value = user.age;
   document.getElementById('status').value = user.status;
-  document.getElementById('userIndex').value = index;
+  document.getElementById('userIndex').value = index; // Simpan indeks untuk pembaruan
 }
 
 // Fungsi untuk menghapus pengguna
 function deleteUser(index) {
-  displayedUsers.splice(index, 1);
-  users = [...displayedUsers];
-  saveToLocalStorage(); // Perbarui data di localStorage
-  displayUsers(users);
+  displayedUsers.splice(index, 1); // Hapus pengguna dari array
+  users = [...displayedUsers]; // Perbarui array users
+  saveToLocalStorage(); // Simpan data ke localStorage
+  displayUsers(users); // Tampilkan data yang diperbarui
 }
 
-// Fungsi untuk mereset form
+// Fungsi untuk mereset form input
 function resetForm() {
-  document.getElementById('userForm').reset();
-  document.getElementById('userIndex').value = '';
+  document.getElementById('userForm').reset(); // Reset semua input form
+  document.getElementById('userIndex').value = ''; // Hapus indeks pengguna
 }
 
-// Fungsi untuk mengurutkan data berdasarkan kriteria
+// Fungsi untuk mengurutkan data berdasarkan kriteria yang dipilih
 function handleSortChange() {
   const sortCriterion = document.getElementById('sort').value;
   if (sortCriterion) {
@@ -144,12 +146,12 @@ function handleSortChange() {
       if (sortCriterion === 'age') {
         return a.age - b.age;
       } else {
-        return a[sortCriterion].localeCompare(b[sortCriterion]);
+        return a[sortCriterion].localeCompare(b[sortCriterion]); // Sortir alfabetis
       }
     });
-    displayUsers(displayedUsers);
+    displayUsers(displayedUsers); // Tampilkan data yang diurutkan
   } else {
-    displayUsers(users);
+    displayUsers(users); // Tampilkan data asli jika tidak dipilih
   }
 }
 
@@ -157,9 +159,9 @@ function handleSortChange() {
 function handleFilterChange() {
   const filterCriterion = document.getElementById('filter').value;
   if (filterCriterion) {
-    displayedUsers = users.filter((user) => user.status === filterCriterion);
+    displayedUsers = users.filter((user) => user.status === filterCriterion); // Filter data sesuai kriteria
   } else {
-    displayedUsers = [...users];
+    displayedUsers = [...users]; // Tampilkan semua data jika tidak dipilih
   }
-  displayUsers(displayedUsers);
+  displayUsers(displayedUsers); // Tampilkan data yang difilter
 }
