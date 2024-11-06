@@ -14,22 +14,36 @@ const table = document.getElementById('userTable');
 let users = [];
 let displayedUsers = [];
 
+// Fungsi untuk menyimpan data ke localStorage
+function saveToLocalStorage() {
+  localStorage.setItem('users', JSON.stringify(users));
+}
+
+// Fungsi untuk memuat data dari localStorage
+function loadFromLocalStorage() {
+  const storedUsers = localStorage.getItem('users');
+  if (storedUsers) {
+    users = JSON.parse(storedUsers);
+    displayedUsers = [...users];
+  }
+}
+
 // Fungsi untuk menampilkan data pengguna ke dalam tabel
 function displayUsers(userList) {
   table.innerHTML = '';
   userList.forEach((user, index) => {
     const row = `
-            <tr>
-                <td class="p-2 border">${user.name || user.login}</td>
-                <td class="p-2 border">${user.email || 'N/A'}</td>
-                <td class="p-2 border">${user.age || 'N/A'}</td>
-                <td class="p-2 border">${user.status || 'N/A'}</td>
-                <td class="p-2 border">
-                    <button onclick="editUser(${index})" class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Edit</button>
-                    <button onclick="deleteUser(${index})" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 ml-2">Hapus</button>
-                </td>
-            </tr>
-        `;
+      <tr>
+        <td class="p-2 border">${user.name || user.login}</td>
+        <td class="p-2 border">${user.email || 'N/A'}</td>
+        <td class="p-2 border">${user.age || 'N/A'}</td>
+        <td class="p-2 border">${user.status || 'N/A'}</td>
+        <td class="p-2 border">
+          <button onclick="editUser(${index})" class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Edit</button>
+          <button onclick="deleteUser(${index})" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 ml-2">Hapus</button>
+        </td>
+      </tr>
+    `;
     table.innerHTML += row;
   });
 }
@@ -49,6 +63,7 @@ async function fetchUsers() {
     }));
 
     displayedUsers = [...users];
+    saveToLocalStorage(); // Simpan data API ke localStorage
     displayUsers(displayedUsers);
   } catch (error) {
     document.body.removeChild(loadingMessage);
@@ -59,8 +74,12 @@ async function fetchUsers() {
 
 // Inisialisasi tampilan awal
 window.onload = () => {
-  fetchUsers();
-  displayUsers(users);
+  loadFromLocalStorage();
+  if (users.length > 0) {
+    displayUsers(users);
+  } else {
+    fetchUsers();
+  }
 };
 
 // Fungsi untuk menambahkan/memperbarui data pengguna
@@ -87,6 +106,7 @@ document.getElementById('userForm').addEventListener('submit', function (e) {
   }
 
   users = [...displayedUsers];
+  saveToLocalStorage(); // Simpan data ke localStorage
   displayUsers(users);
   resetForm();
 });
@@ -105,6 +125,7 @@ function editUser(index) {
 function deleteUser(index) {
   displayedUsers.splice(index, 1);
   users = [...displayedUsers];
+  saveToLocalStorage(); // Perbarui data di localStorage
   displayUsers(users);
 }
 
