@@ -10,11 +10,11 @@
    Unduh file index.html, app.js, dan file terkait ke dalam satu folder lokal.
 
 2. Struktur folder
-
-/project-folder
-|-- index.html
-|-- app.js
-
+```
+   /project-folder
+   |-- index.html
+   |-- app.js
+```
 3. Buka Proyek:
 
    Klik dua kali index.html atau buka file tersebut di browser untuk menjalankannya.
