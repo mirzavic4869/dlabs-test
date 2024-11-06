@@ -68,6 +68,7 @@ async function fetchUsers() {
   } catch (error) {
     document.body.removeChild(loadingMessage);
     document.body.appendChild(errorMessage);
+    alert('Error fetching data. Please try again later.');
     console.error('Error fetching data:', error);
   }
 }
